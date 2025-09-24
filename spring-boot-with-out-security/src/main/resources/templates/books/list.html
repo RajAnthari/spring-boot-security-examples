@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="fragments/navbar :: body"></div>
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center text-primary">Books</h2>
+
+    <!-- Search Form -->
+    <form class="d-flex mb-3" method="get" th:action="@{/books}">
+        <input type="text" class="form-control me-2" name="keyword" th:value="${keyword}" placeholder="Search by title or author">
+        <button type="submit" class="btn btn-primary">🔍 Search</button>
+    </form>
+
+    <div class="mb-3 text-end">
+        <a href="/books/new" class="btn btn-success">➕ Add New Book</a>
+    </div>
+
+    <table class="table table-striped table-hover table-bordered shadow">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th><th>Title</th><th>Author</th><th>Year</th><th>Price</th><th class="text-center">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.publishedYear}"></td>
+            <td th:text="${book.price}"></td>
+            <td class="text-center">
+                <a th:href="@{|/books/${book.id}/edit|}" class="btn btn-warning btn-sm">✏ Edit</a>
+                <a th:href="@{|/books/${book.id}/delete|}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Are you sure you want to delete this book?');">🗑 Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+            <li th:classappend="${currentPage == 0} ? 'disabled'" class="page-item">
+                <a class="page-link" th:href="@{|/books?page=${currentPage-1}&keyword=${keyword}|}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link" th:text="${i+1}"
+                   th:href="@{|/books?page=${i}&keyword=${keyword}|}"></a>
+            </li>
+            <li th:classappend="${currentPage+1 >= totalPages} ? 'disabled'" class="page-item">
+                <a class="page-link" th:href="@{|/books?page=${currentPage+1}&keyword=${keyword}|}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div th:replace="fragments/toast :: body"></div>
+</div>
+</body>
+</html>
